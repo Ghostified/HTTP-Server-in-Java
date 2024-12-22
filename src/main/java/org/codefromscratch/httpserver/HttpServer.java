@@ -1,5 +1,8 @@
 package org.codefromscratch.httpserver;
 
+import org.codefromscratch.httpserver.config.Configuration;
+import org.codefromscratch.httpserver.config.ConfigurationManager;
+
 /*
 * Driver class for the HTTP Server
 * The server connects to a network where it gets a request
@@ -23,5 +26,11 @@ public class HttpServer {
     public static void main(String[] args) {
 
         System.out.println("Server Starting....");
+        ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/http.json");
+
+        //Check if we are reading the configuration file correctly
+        Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
+        System.out.println("The HTTP server is using the port: " + conf.getPort());
+        System.out.println("The HTTP server  is using  the webroot: " + conf.getWebroot());
     }
 }
