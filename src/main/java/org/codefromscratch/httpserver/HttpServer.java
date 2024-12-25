@@ -3,6 +3,12 @@ package org.codefromscratch.httpserver;
 import org.codefromscratch.httpserver.config.Configuration;
 import org.codefromscratch.httpserver.config.ConfigurationManager;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 /*
 * Driver class for the HTTP Server
 * The server connects to a network where it gets a request
@@ -17,7 +23,7 @@ import org.codefromscratch.httpserver.config.ConfigurationManager;
 * Open a socket at a port
 * How many connections?
 * Read request messages (parsing)
-* Opena nd read files from the file system
+* Open and read files from the file system
 * Respond to client : using the http protocol
 * All configurations will be stored in a http.json file
  */
@@ -32,5 +38,48 @@ public class HttpServer {
         Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
         System.out.println("The HTTP server is using the port: " + conf.getPort());
         System.out.println("The HTTP server  is using  the webroot: " + conf.getWebroot());
+
+        //TCP CONNECTION
+        // Open a socket
+        try {
+            ServerSocket serverSocket = new ServerSocket(conf.getPort()); //create the socket
+            Socket socket = serverSocket.accept(); //port open, listening
+
+            //read something from the socket
+            InputStream inputStream = socket.getInputStream();
+            OutputStream outputStream = socket.getOutputStream();
+
+            // reading
+            String html = "<html><head><title>Simple Java HTTP Server</title></head><body><h1>My Web Page</h1><p>This is a web page served by my own java http server </p></body></html>";
+
+            //Http Protocol Client/user agent request
+            //CRLF - carriage return line feed
+            //Contains a status line
+            // ,http version,
+            // response code ,
+            // response message
+
+            final  String CRLF = "\n\r"; //13 and  10 in ASCII
+
+            String response =
+                    "HTTP/1.1 200 OK" + CRLF + //Status Line - HTTP VERSION,RESPONSE CODE , RESPONSE MESSAGE
+                    "Content-length: " + html.getBytes().length + CRLF + //HEADER
+                            CRLF +
+                            html +
+                            CRLF + CRLF ;
+
+            //Writing to the output stream
+            outputStream.write(response.getBytes());
+
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+            serverSocket.close();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
