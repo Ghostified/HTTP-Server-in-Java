@@ -2,12 +2,13 @@ package org.codefromscratch.httpserver;
 
 import org.codefromscratch.httpserver.config.Configuration;
 import org.codefromscratch.httpserver.config.ConfigurationManager;
+import org.codefromscratch.httpserver.core.ServerListenerThread;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /*
 * Driver class for the HTTP Server
@@ -28,58 +29,30 @@ import java.net.Socket;
 * All configurations will be stored in a http.json file
  */
 public class HttpServer {
+
+    //Using sl4j logger
+    private final static Logger LOGGER = LoggerFactory.getLogger(HttpServer.class); //used instead of println statements
     //Driver class with the main method
     public static void main(String[] args) {
 
-        System.out.println("Server Starting....");
+        LOGGER.info("Server starting");
         ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/http.json");
 
         //Check if we are reading the configuration file correctly
         Configuration conf = ConfigurationManager.getInstance().getCurrentConfiguration();
-        System.out.println("The HTTP server is using the port: " + conf.getPort());
-        System.out.println("The HTTP server  is using  the webroot: " + conf.getWebroot());
 
-        //TCP CONNECTION
-        // Open a socket
+        LOGGER.info("The HTTP server is using the port: " + conf.getPort());
+        LOGGER.info("The HTTP server is using the webroot: " + conf.getWebroot());
+
+
+        //create a listener thread
         try {
-            ServerSocket serverSocket = new ServerSocket(conf.getPort()); //create the socket
-            Socket socket = serverSocket.accept(); //port open, listening
-
-            //read something from the socket
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
-
-            // reading
-            String html = "<html><head><title>Simple Java HTTP Server</title></head><body><h1>My Web Page</h1><p>This is a web page served by my own java http server </p></body></html>";
-
-            //Http Protocol Client/user agent request
-            //CRLF - carriage return line feed
-            //Contains a status line
-            // ,http version,
-            // response code ,
-            // response message
-
-            final  String CRLF = "\n\r"; //13 and  10 in ASCII
-
-            String response =
-                    "HTTP/1.1 200 OK" + CRLF + //Status Line - HTTP VERSION,RESPONSE CODE , RESPONSE MESSAGE
-                    "Content-length: " + html.getBytes().length + CRLF + //HEADER
-                            CRLF +
-                            html +
-                            CRLF + CRLF ;
-
-            //Writing to the output stream
-            outputStream.write(response.getBytes());
-
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-            serverSocket.close();
-
-
+            ServerListenerThread serverListenerThread = new ServerListenerThread(conf.getPort(), conf.getWebroot());
+            serverListenerThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
+    //Creat
 }
