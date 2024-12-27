@@ -29,6 +29,9 @@ public class ServerListenerThread extends  Thread{
     @Override
     public void run() {
 
+        // A loop to enable multiple threads , i.e  several clients can listen to the server 9:20 git
+
+
         //TCP CONNECTION
         // Open a socket
         try {
