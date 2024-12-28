@@ -29,52 +29,29 @@ public class ServerListenerThread extends  Thread{
     @Override
     public void run() {
 
-        // A loop to enable multiple threads , i.e  several clients can listen to the server 9:20 git
-
-
-        //TCP CONNECTION
-        // Open a socket
         try {
+            // A loop to enable multiple threads ,  several clients can listen to the server 9:20 git
+            while (serverSocket.isBound() && !serverSocket.isClosed())  {
 
-            Socket socket = serverSocket.accept(); //port open, listening
-            LOGGER.info(" *Connection Accepted" + socket.getInetAddress() );  //log info of the client
-
-            //read something from the socket
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
-
-            // reading
-            String html = "<html><head><title>Simple Java HTTP Server</title></head><body><h1>My Web Page</h1><p>This is a web page served by my own java http server </p></body></html>";
-
-            //Http Protocol Client/user agent request
-            //CRLF - carriage return line feed
-            //Contains a status line
-            // ,http version,
-            // response code ,
-            // response message
-
-            final  String CRLF = "\n\r"; //13 and  10 in ASCII
-
-            String response =
-                    "HTTP/1.1 200 OK" + CRLF + //Status Line - HTTP VERSION,RESPONSE CODE , RESPONSE MESSAGE
-                            "Content-length: " + html.getBytes().length + CRLF + //HEADER
-                            CRLF +
-                            html +
-                            CRLF + CRLF ;
-
-            //Writing to the output stream
-            outputStream.write(response.getBytes());
-
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-            serverSocket.close();
-
+                //TCP CONNECTION
+                // Open a socket
+                Socket socket = serverSocket.accept(); //port open, listening
+                LOGGER.info(" *Connection Accepted" + socket.getInetAddress());  //log info of the client
+                HttpConnectionWorkerThread workerThread = new HttpConnectionWorkerThread(socket);
+                workerThread.start();
+            }
+            //serverSocket.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
+            LOGGER.error("Problem with setting socket ", e);
+        } finally {
+            if (serverSocket != null) {
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {}
+            }
         }
-
 
     }
 
