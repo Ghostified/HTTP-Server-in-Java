@@ -2,7 +2,7 @@ package org.codefromscratch.http;
 
 public class HttpRequest extends HttpMessage{
 
-    private String method;
+    private HttpMethod method;
     private String requestTarget;
     private String httpVersion;
 
@@ -14,7 +14,17 @@ public class HttpRequest extends HttpMessage{
         return  method;
     }
 
-     void setMethod(HttpMethod method){
-        this.method = method;
+
+
+     void setMethod(String methodName) throws  HttpParsingException{
+        for(HttpMethod method: HttpMethod.values()) {
+            if  (methodName.equals(method.name())) {
+                this.method = method;
+                return;
+            }
+        }
+        throw new HttpParsingException(
+                HttpStatusCode.SERVER_ERROR_501_INTERNAL_NOT_IMPLEMENTED
+        );
     }
 }

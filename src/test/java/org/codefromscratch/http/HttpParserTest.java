@@ -8,6 +8,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HttpParserTest {
 
@@ -21,13 +24,26 @@ class HttpParserTest {
 
     @Test
     void parseHttpRequest() {
-        httpParser.parseHttpRequest(
-                generateValidTestCase()
+        HttpRequest request = null;
+
+        //add a HttpParsingException try catch block for runtime errors
+        request = httpParser.parseHttpRequest(
+                generateValidGETTestCase()
         );
+
+        assertEquals(request.getMethod(), HttpMethod.GET);
+    }
+    @Test
+    void parseHttpRequestBadMethod1() {
+        HttpRequest request = httpParser.parseHttpRequest(
+                generateBadTestCaseMethodName1()
+        );
+        fail();
+
     }
 
-    //method to generate a test case
-    private InputStream generateValidTestCase(){
+    //method to generate a test case for a get request and Request line and version
+    private InputStream generateValidGETTestCase(){
         String rawData = //" 23:44:17.781 [Thread-0] INFO org.codefromscratch.httpserver.core.ServerListenerThread --  *Connection Accepted/0:0:0:0:0:0:0:1\r\n" +
                 "GET / HTTP/1.1\r\n" +
                 "Host: localhost:8080\r\n" +
@@ -47,6 +63,23 @@ class HttpParserTest {
                 "Sec-Fetch-Dest: document\r\n" +
                 "Accept-Encoding: gzip, deflate, br, zstd\r\n" +
                 "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
+    //Test CASE FOR A BAD REQUEST LINE AND A BAD METHOD NAME
+
+    private InputStream generateBadTestCaseMethodName1(){
+        String rawData = //" 23:44:17.781 [Thread-0] INFO org.codefromscratch.httpserver.core.ServerListenerThread --  *Connection Accepted/0:0:0:0:0:0:0:1\r\n" +
+                "GET / HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "\r\n";
 
         InputStream inputStream = new ByteArrayInputStream(
                 rawData.getBytes(

@@ -21,7 +21,13 @@ public class HttpParser {
 
         HttpRequest request = new HttpRequest();
 
-        parseRequestLine(reader, request);
+        try {
+            parseRequestLine(reader, request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (HttpParsingException e) {
+            throw new RuntimeException(e);
+        }
         parseHeaders(reader, request);
         parseBody(reader,request);
 
@@ -30,15 +36,36 @@ public class HttpParser {
     }
 
 
-    private void parseRequestLine(InputStreamReader reader, HttpRequest request) throws IOException {
+    private void parseRequestLine(InputStreamReader reader, HttpRequest request) throws IOException, HttpParsingException {
+        StringBuilder processingDataBuffer = new StringBuilder();
 
+        boolean methodParsed = false;
+        boolean requestTargetParsed = false;
         int  _byte;
         while ((_byte = reader.read() ) >= 0){
             if (_byte == CR) {
                 _byte = reader.read();
                 if (_byte == LF){
+                    LOGGER.debug("Request line VERSION to process : {}", processingDataBuffer.toString());
                     return;
                 }
+            }
+
+            if (_byte == SP){
+                //PROCESS DATA
+                if (!methodParsed){
+                    LOGGER.debug("Request line METHOD to process : {}", processingDataBuffer.toString());
+                    request.setMethod(processingDataBuffer.toString());
+                    methodParsed = true;
+                }else if (!requestTargetParsed) {
+                    LOGGER.debug("Request line REQUEST LINE to process : {}", processingDataBuffer.toString());
+                    requestTargetParsed = true;
+                }
+
+                processingDataBuffer.delete(0, processingDataBuffer.length());
+
+            } else {
+                processingDataBuffer.append((char)_byte);
             }
         }
     }
