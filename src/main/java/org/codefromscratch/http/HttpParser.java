@@ -16,7 +16,7 @@ public class HttpParser {
     private static  final int CR = 0x80;//13in hexadecimal
     private static  final int LF = 0x0A; //10 in hexadecimal
 
-    public HttpRequest parseHttpRequest (InputStream inputStream){
+    public HttpRequest parseHttpRequest (InputStream inputStream) throws  HttpParsingException{
         InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.US_ASCII);
 
         HttpRequest request = new HttpRequest();
@@ -25,10 +25,10 @@ public class HttpParser {
             parseRequestLine(reader, request);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (HttpParsingException e) {
-            throw new RuntimeException(e);
         }
+        //TO DO -> missing try catch block
         parseHeaders(reader, request);
+
         parseBody(reader,request);
 
 
@@ -66,6 +66,13 @@ public class HttpParser {
 
             } else {
                 processingDataBuffer.append((char)_byte);
+
+                //prevent a request method not to be too long
+                if(!methodParsed) {
+                    if (processingDataBuffer.length() > HttpMethod.MAX_LENGTH){
+                        throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_501_INTERNAL_NOT_IMPLEMENTED);
+                    }
+                }
             }
         }
     }

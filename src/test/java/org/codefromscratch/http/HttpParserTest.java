@@ -27,19 +27,43 @@ class HttpParserTest {
         HttpRequest request = null;
 
         //add a HttpParsingException try catch block for runtime errors
-        request = httpParser.parseHttpRequest(
-                generateValidGETTestCase()
-        );
+        try {
+            request = httpParser.parseHttpRequest(
+                    generateValidGETTestCase()
+            );
+        } catch (HttpParsingException e) {
+            fail(e);
+        }
 
         assertEquals(request.getMethod(), HttpMethod.GET);
     }
+
+
     @Test
     void parseHttpRequestBadMethod1() {
-        HttpRequest request = httpParser.parseHttpRequest(
-                generateBadTestCaseMethodName1()
-        );
-        fail();
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadTestCaseMethodName1()
+            );
+            fail();
+        } catch (HttpParsingException e) {
+            assertEquals(e.getErrorCode(),HttpStatusCode.SERVER_ERROR_501_INTERNAL_NOT_IMPLEMENTED);
+        }
 
+
+    }
+
+    @Test
+    void parseHttpRequestBadMethod2 () {
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadTestCaseMethodName2()
+            );
+
+            fail();
+        } catch (HttpParsingException e){
+           assertEquals(e.getErrorCode(),HttpStatusCode.SERVER_ERROR_501_INTERNAL_NOT_IMPLEMENTED);
+        }
     }
 
     //method to generate a test case for a get request and Request line and version
@@ -75,6 +99,7 @@ class HttpParserTest {
 
     //Test CASE FOR A BAD REQUEST LINE AND A BAD METHOD NAME
 
+
     private InputStream generateBadTestCaseMethodName1(){
         String rawData = //" 23:44:17.781 [Thread-0] INFO org.codefromscratch.httpserver.core.ServerListenerThread --  *Connection Accepted/0:0:0:0:0:0:0:1\r\n" +
                 "GET / HTTP/1.1\r\n" +
@@ -89,4 +114,21 @@ class HttpParserTest {
 
         return inputStream;
     }
+
+    //Test Case  to check for method name length
+    private InputStream generateBadTestCaseMethodName2(){
+        String rawData =
+                "GETTTT/ HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
 }
