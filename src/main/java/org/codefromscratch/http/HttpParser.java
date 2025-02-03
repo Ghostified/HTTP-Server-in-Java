@@ -13,7 +13,7 @@ public class HttpParser {
     private  final static Logger LOGGER = LoggerFactory.getLogger(HttpParser.class);
 
     private static  final int SP = 0x20; //32 in
-    private static  final int CR = 0x80;//13in hexadecimal
+    private static  final int CR = 0x0D;//13in hexadecimal
     private static  final int LF = 0x0A; //10 in hexadecimal
 
     public HttpRequest parseHttpRequest (InputStream inputStream) throws  HttpParsingException{
@@ -23,6 +23,7 @@ public class HttpParser {
 
         try {
             parseRequestLine(reader, request);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,8 +42,9 @@ public class HttpParser {
 
         boolean methodParsed = false;
         boolean requestTargetParsed = false;
+
         int  _byte;
-        while ((_byte = reader.read() ) >= 0){
+        while ((_byte = reader.read()) >= 0){
             if (_byte == CR) {
                 _byte = reader.read();
                 if (_byte == LF){
@@ -58,7 +60,7 @@ public class HttpParser {
                     request.setMethod(processingDataBuffer.toString());
                     methodParsed = true;
                 }else if (!requestTargetParsed) {
-                    LOGGER.debug("Request line REQUEST LINE to process : {}", processingDataBuffer.toString());
+                    LOGGER.debug("Request line REQUEST TARGET to process : {}", processingDataBuffer.toString());
                     requestTargetParsed = true;
                 }
 

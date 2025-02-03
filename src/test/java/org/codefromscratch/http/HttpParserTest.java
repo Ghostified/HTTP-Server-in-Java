@@ -102,7 +102,7 @@ class HttpParserTest {
 
     private InputStream generateBadTestCaseMethodName1(){
         String rawData = //" 23:44:17.781 [Thread-0] INFO org.codefromscratch.httpserver.core.ServerListenerThread --  *Connection Accepted/0:0:0:0:0:0:0:1\r\n" +
-                "GET / HTTP/1.1\r\n" +
+                "GeT / HTTP/1.1\r\n" +
                         "Host: localhost:8080\r\n" +
                         "\r\n";
 
@@ -118,7 +118,7 @@ class HttpParserTest {
     //Test Case  to check for method name length
     private InputStream generateBadTestCaseMethodName2(){
         String rawData =
-                "GETTTT/ HTTP/1.1\r\n" +
+                "GETTTTTT/ HTTP/1.1\r\n" +
                         "Host: localhost:8080\r\n" +
                         "\r\n";
 
