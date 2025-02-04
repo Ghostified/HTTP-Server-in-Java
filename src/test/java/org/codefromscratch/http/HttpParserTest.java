@@ -66,6 +66,19 @@ class HttpParserTest {
         }
     }
 
+    @Test
+    void parseHttpRequestInvalidNumberOfItems1() {
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadTestCaseRequestInvalidNumberOfItems()
+            );
+
+            fail();
+        } catch (HttpParsingException e){
+            e.printStackTrace();
+        }
+    }
+
     //method to generate a test case for a get request and Request line and version
     private InputStream generateValidGETTestCase(){
         String rawData = //" 23:44:17.781 [Thread-0] INFO org.codefromscratch.httpserver.core.ServerListenerThread --  *Connection Accepted/0:0:0:0:0:0:0:1\r\n" +
@@ -119,6 +132,22 @@ class HttpParserTest {
     private InputStream generateBadTestCaseMethodName2(){
         String rawData =
                 "GETTTTTT/ HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
+    //Test of more than three items in the request line
+    private InputStream generateBadTestCaseRequestInvalidNumberOfItems(){
+        String rawData =
+                "GET/ AAAAAA HTTP/1.1\r\n" +
                         "Host: localhost:8080\r\n" +
                         "\r\n";
 
