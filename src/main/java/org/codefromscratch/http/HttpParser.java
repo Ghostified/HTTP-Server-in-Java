@@ -56,6 +56,9 @@ public class HttpParser {
                     }
 
                     return;
+                } else {
+                    //what happens if the next byte is a CR and not a LF
+                    throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
                 }
             }
 
@@ -67,6 +70,7 @@ public class HttpParser {
                     methodParsed = true;
                 }else if (!requestTargetParsed) {
                     LOGGER.debug("Request line REQUEST TARGET to process : {}", processingDataBuffer.toString());
+                    request.setRequestTarget(processingDataBuffer.toString());
                     requestTargetParsed = true;
                 }else {
                     throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
