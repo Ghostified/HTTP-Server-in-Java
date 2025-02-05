@@ -93,6 +93,20 @@ class HttpParserTest {
         }
     }
 
+    //Test for only carriage return and line feed
+    @Test
+    void parseHttpEmptyRequestCRnoLF() {
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadTestCaseRequestLineCRnoLF()
+            );
+
+            fail();
+        } catch (HttpParsingException e){
+            assertEquals(e.getErrorCode(),HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        }
+    }
+
     //method to generate a test case for a get request and Request line and version
     private InputStream generateValidGETTestCase(){
         String rawData = //" 23:44:17.781 [Thread-0] INFO org.codefromscratch.httpserver.core.ServerListenerThread --  *Connection Accepted/0:0:0:0:0:0:0:1\r\n" +
@@ -179,6 +193,23 @@ class HttpParserTest {
     private InputStream generateBadTestCaseEmptyRequestLine(){
         String rawData =
                 "\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "Accept-Language: en-US,en;q=0.9,es;q=0.8,pt;q=0.7,de-DE;q=0.6,de;q=0.5,la;q=0.4\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
+    //Test for only carriage return and line feed
+    private InputStream generateBadTestCaseRequestLineCRnoLF(){
+        String rawData =
+                "GET / HTTP/1.1\r" + // <------ No line feed
                         "Host: localhost:8080\r\n" +
                         "Accept-Language: en-US,en;q=0.9,es;q=0.8,pt;q=0.7,de-DE;q=0.6,de;q=0.5,la;q=0.4\r\n" +
                         "\r\n";
