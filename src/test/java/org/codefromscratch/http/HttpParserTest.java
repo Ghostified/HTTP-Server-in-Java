@@ -147,8 +147,9 @@ class HttpParserTest {
     //Test of more than three items in the request line
     private InputStream generateBadTestCaseRequestInvalidNumberOfItems(){
         String rawData =
-                "GET/ AAAAAA HTTP/1.1\r\n" +
+                "GET / AAAAAA HTTP/1.1\r\n" +
                         "Host: localhost:8080\r\n" +
+                        "Accept-Language: en-US,en;q=0.9,es;q=0.8,pt;q=0.7,de-DE;q=0.6,de;q=0.5,la;q=0.4\r\n" +
                         "\r\n";
 
         InputStream inputStream = new ByteArrayInputStream(
