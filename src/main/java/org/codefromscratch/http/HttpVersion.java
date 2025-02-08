@@ -19,16 +19,29 @@ public enum HttpVersion {
 
     private  static  final Pattern httpVersionRegexPattern = Pattern.compile("^HTTP/(?<major>\\d+).(?<minor>\\d+)");
 
-    public static HttpVersion getCompatibleVersion (String literalVersion) throws HttpParsingException {
+    public static HttpVersion getBestCompatibleVersion (String literalVersion) throws BadHttpVersionException {
 
         Matcher matcher = httpVersionRegexPattern.matcher(literalVersion);
         if(!matcher.find() || matcher.groupCount() != 2){
-            throw  new HttpParsingException(HttpStatusCode.SERVER_ERROR_500_INTERNAL_SERVER_ERROR);
+            throw  new BadHttpVersionException ();
         }
 
         int major = Integer.parseInt(matcher.group("major"));
         int minor = Integer.parseInt(matcher.group("minor"));
 
-        for()
+        HttpVersion temporaryBestCompatible = null;
+        for(HttpVersion version : HttpVersion.values() ) {
+            if (version.LITERAL.equals(literalVersion)){
+                return  version;
+            } else {
+                if (version.MAJOR == major){
+                    if (version.MINOR < minor) {
+                        temporaryBestCompatible = version;
+                    }
+                }
+            }
+        }
+
+        return  temporaryBestCompatible;
     }
 }
