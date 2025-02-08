@@ -29,8 +29,6 @@ public class HttpVersionTest {
         } catch (BadHttpVersionException e) {
 
         }
-//        assertNotNull(version);
-//        assertEquals(version, HttpVersion.HTTP_1_1);
 
     }
 }
