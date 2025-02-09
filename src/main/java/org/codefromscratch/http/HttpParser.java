@@ -129,6 +129,7 @@ public class HttpParser {
                 processingDataBuffer.append((char)_byte);
             }
         }
+
     }
 
     private void processSingleHeaderField(StringBuilder processingDataBuffer, HttpRequest request) throws HttpParsingException{
