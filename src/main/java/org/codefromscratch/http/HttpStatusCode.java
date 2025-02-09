@@ -9,7 +9,8 @@ public enum HttpStatusCode {
 
     //SERVER Errors
     SERVER_ERROR_500_INTERNAL_SERVER_ERROR (500, "Internal Server Error"),
-    SERVER_ERROR_501_INTERNAL_NOT_IMPLEMENTED (501, "Method Not Implemented");
+    SERVER_ERROR_501_INTERNAL_NOT_IMPLEMENTED (501, "Method Not Implemented"),
+    SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED(505, "Http Version not supported");
 
 
     public final int STATUS_CODE;
@@ -19,4 +20,6 @@ public enum HttpStatusCode {
         this.STATUS_CODE = STATUS_CODE;
         this.MESSAGE = MESSAGE;
     }
+
+
 }

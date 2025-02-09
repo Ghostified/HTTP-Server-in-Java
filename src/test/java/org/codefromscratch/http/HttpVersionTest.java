@@ -31,4 +31,19 @@ public class HttpVersionTest {
         }
 
     }
+
+    @Test
+    void getBestCompatibleVersionHigherVersion(){
+        HttpVersion  version = null;
+
+        try {
+            version = HttpVersion.getBestCompatibleVersion("HTTP/1.3");
+            assertNotNull(version);
+            assertEquals(version, HttpVersion.HTTP_1_1);
+
+        } catch (BadHttpVersionException e) {
+            fail();
+        }
+
+    }
 }
