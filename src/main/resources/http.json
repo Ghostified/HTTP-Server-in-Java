@@ -1,6 +1,6 @@
 {
 
   "port" : 8080,
-  "webroot": "/tmp"
+  "webroot": "/home/ghost/Projects/Java/HTTP_Server_In_Java/WebRoot"
 
 }
