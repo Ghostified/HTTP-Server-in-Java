@@ -1,9 +1,11 @@
 package org.codefromscratch.httpserver.core.io;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.nio.file.ReadOnlyFileSystemException;
 
 public class WebRootHandler {
 
@@ -60,6 +62,39 @@ public class WebRootHandler {
         }
 
         return mimeType;
+    }
+
+    //method that returns a byte array of the file in the content file
+    /*
+    * Return byte array in the file
+    * -> TODO - For Large Files new strategy is needed
+    *  //@param relativePath  - the path to the file inside the webroot folder
+    * @return -> byte array of the data
+    * @throws FileNotFoundException - if file can not be found
+    * @throws ReadFileException - if problems reading the file
+    *
+    * */
+
+    public  byte[] getFileByteArrayData (String relativePath) throws FileNotFoundException, ReadFileException {
+        if(checkIfEndsWithSlash(relativePath)){
+            relativePath += "index.html" ; //by default serve index.html, if it exists
+        }
+
+        if (!checkIfProvidedRelativePathExists(relativePath)){
+            throw  new FileNotFoundException("index.html file not found" + relativePath);
+        }
+
+        File file = new File( webRoot, relativePath);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        byte [] fileBytes = new byte[ (int) file.length()];
+
+        try {
+            fileInputStream.read(fileBytes);
+            fileInputStream.close();
+        } catch (IOException e){
+            throw new ReadFileException(e);
+        }
+        return fileBytes;
     }
 
 }

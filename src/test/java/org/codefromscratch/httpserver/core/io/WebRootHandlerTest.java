@@ -217,4 +217,26 @@ public class WebRootHandlerTest {
         }
     }
 
+    @Test
+    void testGetFileByteArrayData(){
+        try {
+           assertTrue(webRootHandler.getFileByteArrayData("/").length> 0);
+        } catch (FileNotFoundException e) {
+            fail(e);
+        } catch (ReadFileException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testGetFileByteArrayDataNotThere(){
+        try {
+           webRootHandler.getFileByteArrayData("/test.html");
+        } catch (FileNotFoundException e) {
+           //Pass
+        } catch (ReadFileException e) {
+            fail(e);
+        }
+    }
+
 }
