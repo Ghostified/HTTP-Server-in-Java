@@ -136,4 +136,54 @@ public class WebRootHandlerTest {
         }
     }
 
+    @Test
+    void testWebRootFilePathExists(){
+        try {
+            boolean result = (boolean) checkIfProvidedRelativePathExistsMethod.invoke(webRootHandler,"/index.html");
+            assertTrue(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testWebRootFilePathExistsGoodRelative(){
+        try {
+            boolean result = (boolean) checkIfProvidedRelativePathExistsMethod.invoke(webRootHandler,"/./././index.html");
+            assertTrue(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    //check for a file that does not exist
+    @Test
+    void testWebRootFilePathExistsDoesNotExist(){
+        try {
+            boolean result = (boolean) checkIfProvidedRelativePathExistsMethod.invoke(webRootHandler,"/./././indexNotHere.html");
+            assertFalse(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    //try to traverse out of the webrrot folder
+    @Test
+    void testWebRootFilePathExistsInvalid(){
+        try {
+            boolean result = (boolean) checkIfProvidedRelativePathExistsMethod.invoke(webRootHandler,"/../LICENCE");
+            assertFalse(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
 }
