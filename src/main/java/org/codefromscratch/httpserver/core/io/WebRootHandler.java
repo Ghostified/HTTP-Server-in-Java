@@ -1,7 +1,9 @@
 package org.codefromscratch.httpserver.core.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLConnection;
 
 public class WebRootHandler {
 
@@ -38,6 +40,26 @@ public class WebRootHandler {
             return false;
         }
         return false;
+    }
+
+    public  String getFileMimeType (String relativePath) throws FileNotFoundException {
+        if(checkIfEndsWithSlash(relativePath)){
+            relativePath += "index.html" ; //by default serve index.html, if it exists
+        }
+
+        if (!checkIfProvidedRelativePathExists(relativePath)){
+            throw  new FileNotFoundException("index.html file not found" + relativePath);
+        }
+
+        File file = new File(webRoot, relativePath);
+
+        String mimeType =  URLConnection.getFileNameMap().getContentTypeFor(file.getName());
+
+        if (mimeType == null) {
+            return "application/octet-stream";
+        }
+
+        return mimeType;
     }
 
 }
