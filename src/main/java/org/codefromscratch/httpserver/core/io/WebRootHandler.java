@@ -37,6 +37,7 @@ public class WebRootHandler {
         } catch (IOException e) {
             return false;
         }
+        return false;
     }
 
 }
