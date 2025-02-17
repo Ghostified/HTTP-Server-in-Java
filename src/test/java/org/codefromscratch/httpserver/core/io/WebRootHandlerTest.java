@@ -5,13 +5,31 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WebRootHandlerTest {
 
+   private WebRootHandler webRootHandler;
+
+    private Method checkIfEndsWithSlashMethod;
+
+    private Method checkIfProvidedRelativePathExistsMethod;
+
+
+
     @BeforeAll
-    public  void beforeClass(){
+    public  void beforeClass() throws WebRootNotFoundException, NoSuchMethodException {
+        webRootHandler = new WebRootHandler("WebRoot");
+        Class<WebRootHandler> cls = WebRootHandler.class;
+        checkIfEndsWithSlashMethod = cls.getDeclaredMethod("checkIfEndsWithSlash", String.class);
+        checkIfEndsWithSlashMethod.setAccessible(true);
+
+        checkIfProvidedRelativePathExistsMethod = cls.getDeclaredMethod("checkIfProvidedRelativePathExists", String.class);
+        checkIfProvidedRelativePathExistsMethod.setAccessible(true);
 
     }
 
@@ -55,6 +73,66 @@ public class WebRootHandlerTest {
             fail();
         } catch (WebRootNotFoundException e) {
 
+        }
+    }
+
+    @Test
+    void setCheckIfEndsWithSlashMethodFalse() {
+        try {
+            boolean result = (Boolean) checkIfEndsWithSlashMethod.invoke( webRootHandler, "index.html");
+            assertFalse(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setCheckIfEndsWithSlashMethodFalse2() {
+        try {
+            boolean result = (Boolean) checkIfEndsWithSlashMethod.invoke( webRootHandler, "/index.html");
+            assertFalse(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setCheckIfEndsWithSlashMethodFalse3() {
+        try {
+            boolean result = (Boolean) checkIfEndsWithSlashMethod.invoke( webRootHandler, "/private/index.html");
+            assertFalse(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setCheckIfEndsWithSlashMethodTrue() {
+        try {
+            boolean result = (Boolean) checkIfEndsWithSlashMethod.invoke( webRootHandler, "/");
+            assertTrue(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void setCheckIfEndsWithSlashMethodTrue2() {
+        try {
+            boolean result = (Boolean) checkIfEndsWithSlashMethod.invoke( webRootHandler, "/private/");
+            assertTrue(result);
+        } catch (IllegalAccessException e) {
+            fail(e);
+        } catch (InvocationTargetException e) {
+            fail(e);
         }
     }
 
