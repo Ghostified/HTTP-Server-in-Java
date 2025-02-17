@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -182,6 +183,36 @@ public class WebRootHandlerTest {
         } catch (IllegalAccessException e) {
             fail(e);
         } catch (InvocationTargetException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testGetFileMimeTypeText(){
+        try {
+            String mimeType = webRootHandler.getFileMimeType("/");
+            assertEquals("text/html", mimeType);
+        } catch (FileNotFoundException e) {
+           fail(e);
+        }
+    }
+
+    @Test
+    void testGetFileMimeTypePng(){
+        try {
+            String mimeType = webRootHandler.getFileMimeType("/logo.png");
+            assertEquals("image/png", mimeType);
+        } catch (FileNotFoundException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void testGetFileMimeTypeDefault(){
+        try {
+            String mimeType = webRootHandler.getFileMimeType("/favicon.ico");
+            assertEquals("application/octet-stream", mimeType);
+        } catch (FileNotFoundException e) {
             fail(e);
         }
     }
